@@ -2,13 +2,13 @@
   "name": "autofix2000-backend",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://github.com/al1shq/HackPrinceton-2026-AI-Mechanic/tree/main#readme",
+  "homepage": "https://github.com/al1shq/HackPrinceton-2026-AutoFix2000/tree/main#readme",
   "bugs": {
-    "url": "https://github.com/al1shq/HackPrinceton-2026-AI-Mechanic/issues"
+    "url": "https://github.com/al1shq/HackPrinceton-2026-AutoFix2000/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/al1shq/HackPrinceton-2026-AI-Mechanic.git#main"
+    "url": "git+https://github.com/al1shq/HackPrinceton-2026-AutoFix2000.git#main"
   },
   "license": "ISC",
   "author": "Alisha Owaise",
