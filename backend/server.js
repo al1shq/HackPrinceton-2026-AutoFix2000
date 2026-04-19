@@ -21,9 +21,8 @@ app.use(express.json());
 const K2_API_KEY = process.env.K2_API_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY; //NVIDIA: Nemotron 3 Super
 
-/**
- * Orchid frontend calls this, endpoint for K2 API
- */
+
+//Orchid frontend calls this, endpoint for K2 API
 app.post("/diagnose", async (req, res) => {
   try {
     const { messages } = req.body;
@@ -81,6 +80,7 @@ app.post("/diagnose", async (req, res) => {
   console.log("before call test");
 
     // CALL K2 API 
+    // based on info provided with K2 API
     const k2Response = await fetch(
       "https://api.k2think.ai/v1/chat/completions",
       {
