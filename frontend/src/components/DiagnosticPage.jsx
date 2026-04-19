@@ -309,8 +309,8 @@ export default function DiagnosticPage({ inputData, onComplete }) {
                   </div>
                 )}
 
-                {/* TEXT */}
-                {(questionType === 'text' || questionType === 'inspection') && (
+                {/* inspection */}
+                {(questionType === 'inspection') && (
                   <>
                     {questionType === 'inspection' && (
                       <div className="retro-box-yellow p-3 mb-2 text-center">
@@ -319,26 +319,26 @@ export default function DiagnosticPage({ inputData, onComplete }) {
                         </span>
                       </div>
                     )}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        className="retro-input flex-1"
-                        style={{ fontSize: '13px' }}
-                        placeholder="Type your answer here...:"
-                        value={textInput}
-                        autoFocus
-                        onChange={(e) => setTextInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && textInput.trim() && handleAnswer(textInput.trim())}
-                      />
-                      <button
-                        className="btn-primary"
-                        style={{ padding: '8px 16px', fontSize: '14px' }}
-                        onClick={() => textInput.trim() && handleAnswer(textInput.trim())}
-                        disabled={!textInput.trim()}
-                      >
-                        ↵
-                      </button>
-                    </div>
+                    {/* text*/}
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            type="text"
+                            className="retro-input flex-1"
+                            style={{ fontSize: '13px' }}
+                            placeholder="Type your answer here..."
+                            value={textInput}
+                            onChange={(e) => setTextInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && textInput.trim() && handleAnswer(textInput.trim())}
+                          />
+                          <button
+                            className="btn-primary"
+                            style={{ padding: '8px 16px', fontSize: '14px' }}
+                            onClick={() => textInput.trim() && handleAnswer(textInput.trim())}
+                            disabled={!textInput.trim()}
+                          >
+                            ↵
+                          </button>
+                        </div>
                   </>
                 )}
 
