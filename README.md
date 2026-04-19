@@ -1,7 +1,7 @@
 # AutoFix 2000
 
-Main Track: SUSTAINABILITY
-Rookie Hack
+#Main Track: SUSTAINABILITY
+$Rookie Hack
 
 Donor Tracks:
 Best Use of K2 Think V2 by Institute of Foundation Models at MBZUAI
