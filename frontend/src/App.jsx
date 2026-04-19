@@ -1,3 +1,5 @@
+// this page has been generated Orchid AI
+
 import { useState } from 'react';
 import LandingPage from './components/LandingPage';
 import InputPage from './components/InputPage';
