@@ -52,9 +52,10 @@ app.post("/diagnose", async (req, res) => {
           - if recieving a response inquiring about how to do something, you MUST provide background information, and then ask if they've understood before asking about the result.
           - adapt suggestions for user skill level (e.g. "If you're comfortable checking the oil level, please do so")
           - Update probabilities after each response
-          - avoid final answers unless confidence > 0.85
+          - avoid final answers unless confidence > 0.80
           - Estimate waste prevented (money + environmental impact)
           - ALWAYS provide options for answers. If not applicable, accept text input.
+          - DO NOT ask redundant questions 
 
           Always respond in structured JSON:
           {
@@ -80,13 +81,14 @@ app.post("/diagnose", async (req, res) => {
   console.log("before call test");
 
     // CALL K2 API 
-    const response = await fetch(
+    const k2Response = await fetch(
       "https://api.k2think.ai/v1/chat/completions",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${K2_API_KEY}`
+          Authorization: `Bearer ${K2_API_KEY}`,
+          accept: "application/json"
         },
         body: JSON.stringify({
           model: "MBZUAI-IFM/K2-Think-v2",
@@ -94,63 +96,55 @@ app.post("/diagnose", async (req, res) => {
           stream: false
         })
       },
-      {
-        headers: {
-          Authorization: `Bearer ${K2_API_KEY}`,
-          "Content-Type": "application/json",
-          accept: "application/json"
-        }
-      }
     );
 
+    
     console.log("TEST after call");
 
-
-    const rawResponse = response.data.choices[0].message.content;
+    const k2Data = await k2Response.json();
+    const rawContent = k2Data.choices[0].message.content;
     
   
     // had issues parsing the response and extracting JSON from K2
     // attempt to parse in backend and not through frontend
     let parsed;
-    
+
     try {
-      parsed = JSON.parse(rawResponse);
-    }
-    
-    catch {
-      // 2. Try regex extract
-      const match = rawResponse.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(rawContent);
+    } catch {
+      const match = rawContent.match(/\{[\s\S]*\}/);
       if (match) {
         try {
           parsed = JSON.parse(match[0]);
         } catch {
-
-          // 3. Fallback to NVIDIA
-          console.log("Sending to Elephant...");
-          const gemmaRes = await axios.post(
+          // K2 returned text around the JSON, so ask Elephant to extract just the object.
+          console.log("Send to Elephant");
+          const otherResponse = await fetch(
             "https://openrouter.ai/api/v1/chat/completions",
             {
-              model: "openrouter/elephant-alpha",
-              messages: [{
-                role: "user",
-                content: `Extract and return ONLY the JSON object from this text. No explanation, no markdown, just raw JSON:\n\n${rawContent}`
-              }],
-              max_tokens: 1024
-            },
-            {
+              method: "POST",
               headers: {
-                Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                "Content-Type": "application/json"
-              }
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${OPENROUTER_API_KEY}`
+              },
+              body: JSON.stringify({
+                model: "openrouter/elephant-alpha",
+                messages: [
+                  {
+                    role: "user",
+                    content: `Extract and return ONLY the JSON object from this text. No explanation, no markdown, just raw JSON:\n\n${rawContent}`
+                  }
+                ],
+                max_tokens: 1024
+              })
             }
           );
-          const gemmaContent = gemmaRes.data.choices[0].message.content;
-          console.log("RAW GEMMA:", gemmaContent);
-          const start = gemmaContent.indexOf('{');
-          const end = gemmaContent.lastIndexOf('}');
-          if (start === -1 || end === -1) throw new Error("Gemma couldn't extract JSON");
-          parsed = JSON.parse(gemmaContent.slice(start, end + 1));
-
+          const fixedData = await otherResponse.json();
+          console.log("raw elephant:", fixedData.choices[0].message.content);
+          const start = fixedData.choices[0].message.content.indexOf("{");
+          const end = fixedData.choices[0].message.content.lastIndexOf("}");
+          if (start === -1 || end === -1) throw new Error("Elephant couldn't extract JSON");
+          parsed = JSON.parse(fixedData.choices[0].message.content.slice(start, end + 1));
         }
       }
     }
