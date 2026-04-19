@@ -4,7 +4,7 @@ Main Track: SUSTAINABILITY
 Rookie Hack
 
 
-Donor Tracks:  
+Entering these Donor Tracks:  
 Best Use of K2 Think V2 by Institute of Foundation Models at MBZUAI  
 Best AI-Powered App by Orchids
 
