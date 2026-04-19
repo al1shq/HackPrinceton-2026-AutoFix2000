@@ -49,7 +49,7 @@ export default function DiagnosticPage({ inputData, onComplete }) {
 
     setCurrent(data);
     
-    if (data.confidence >= 0.85) {
+    if (data.confidence >= 0.80) {
       setTimeout(() => onComplete({ apiResult: data, messages: msgs }), 600);
     }
   } catch (err) {
@@ -180,7 +180,7 @@ export default function DiagnosticPage({ inputData, onComplete }) {
                   </span>
                 </div>
                 <div className="font-mono-retro mt-1" style={{ fontSize: '9px', color: 'var(--dusky-purple-light)' }}>
-                  Target: 85% for final diagnosis
+                  Target: 80% for final diagnosis
                 </div>
               </div>
             )}
