@@ -85,7 +85,8 @@ export default function DiagnosticPage({ inputData, onComplete }) {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--cream)' }}>
-      {/* Top bar */}
+
+  {/* Top bar */}
       <div className="window-bar" style={{ borderBottom: '2px solid var(--dusky-purple)' }}>
         <div className="window-dot" style={{ background: '#ff6b6b' }} />
         <div className="window-dot" style={{ background: '#ffd93d' }} />
@@ -311,39 +312,36 @@ export default function DiagnosticPage({ inputData, onComplete }) {
 
                 {/* inspection */}
                 {(questionType === 'inspection') && (
-                  <>
-                    {questionType === 'inspection' && (
-                      <div className="retro-box-yellow p-3 mb-2 text-center">
-                        <span className="font-mono-retro" style={{ fontSize: '11px', color: '#6b5a10', letterSpacing: '0.08em' }}>
-                          🔍 Perform the inspection described above, then enter your observation below.
-                        </span>
-                      </div>
-                    )}
-                    {/* text*/}
-                        <div className="flex gap-2 mt-2">
-                          <input
-                            type="text"
-                            className="retro-input flex-1"
-                            style={{ fontSize: '13px' }}
-                            placeholder="Type your answer here..."
-                            value={textInput}
-                            onChange={(e) => setTextInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && textInput.trim() && handleAnswer(textInput.trim())}
-                          />
-                          <button
-                            className="btn-primary"
-                            style={{ padding: '8px 16px', fontSize: '14px' }}
-                            onClick={() => textInput.trim() && handleAnswer(textInput.trim())}
-                            disabled={!textInput.trim()}
-                          >
-                            ↵
-                          </button>
-                        </div>
-                  </>
+                  <div className="retro-box-yellow p-3 mb-2 text-center">
+                    <span className="font-mono-retro" style={{ fontSize: '11px', color: '#6b5a10', letterSpacing: '0.08em' }}>
+                      🔍 Perform the inspection described above, then enter your observation below.
+                    </span>
+                  </div>
                 )}
+                
+                {/* text*/}
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    className="retro-input flex-1"
+                    style={{ fontSize: '13px' }}
+                    placeholder="Type your answer here..."
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && textInput.trim() && handleAnswer(textInput.trim())}
+                  />
+                    <button
+                      className="btn-primary"
+                      style={{ padding: '8px 16px', fontSize: '14px' }}
+                      onClick={() => textInput.trim() && handleAnswer(textInput.trim())}
+                      disabled={!textInput.trim()}
+                    >
+                      ↵
+                    </button>
+                  </div>
+                </div>
+              )}
 
-              </div>
-            )}
           </div>
 
           {/* Uploaded image reference */}
