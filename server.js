@@ -1,0 +1,106 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import axios from "axios";
+
+dotenv.config();
+
+const app = express();
+
+// middleware
+app.use(cors());
+app.use(express.json());
+
+// load API key securely
+const K2_API_KEY = process.env.K2_API_KEY;
+
+/**
+ * MAIN DIAGNOSTIC ENDPOINT
+ * Orchid frontend will call this
+ */
+app.post("/diagnose", async (req, res) => {
+  try {
+    const { messages } = req.body;
+
+    // Inject SYSTEM PROMPT (your reasoning engine)
+    const fullMessages = [
+      {
+        role: "system",
+        content: `
+You are AutoFix2000, an expert AI car diagnostic reasoning system.
+
+You MUST:
+- Act like a mechanic using step-by-step reasoning
+- Generate multiple hypotheses with probabilities
+- Ask one question at a time
+- Adapt question type (yes/no, multiple choice, text, inspection)
+- prioritize questions that maximize information gain and minimize cost
+- prioritize low-cost questions (e.g. "Is the check engine light on?") before high-cost ones (e.g. "Inspect the fuel pump")
+- prioritize questions that can rule out multiple issues at once
+- if suggesting an inspection, provide clear instructions on what to check and what to look for
+- for suggestions that require user input (e.g. "What is the color of the smoke?"), provide clear guidance on how to find the answer
+- adapt suggestions for user skill level (e.g. "If you're comfortable checking the oil level, please do so and let me know what you find")
+- Update probabilities after each response
+- Avoid final answers unless confidence > 0.85
+- Estimate waste prevented (money + environmental impact)
+
+Always respond in structured JSON:
+{
+  "question": "...",
+  "question_type": "yes_no | multiple_choice | text_input | inspection",
+  "options": [],
+  "hypotheses": [
+    {
+      "issue": "...",
+      "probability": 0.0,
+      "reason": "..."
+    }
+  ],
+  "recommendation": "...",
+  "waste_prevented": {
+    "money_saved_estimate": "...",
+    "environmental_impact": "..."
+  },
+  "confidence": 0.0,
+  "reasoning_summary": "..."
+}
+        `.trim()
+      },
+      ...messages
+    ];
+
+    // CALL K2 API (this is your curl converted)
+    const response = await axios.post(
+      "https://api.k2think.ai/v1/chat/completions",
+      {
+        model: "MBZUAI-IFM/K2-Think-v2",
+        messages: fullMessages,
+        stream: false
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${K2_API_KEY}`,
+          "Content-Type": "application/json",
+          accept: "application/json"
+        }
+      }
+    );
+
+    // send result back to Orchid
+    res.json(response.data);
+
+  } catch (error) {
+    console.error("K2 Error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      error: "K2 request failed",
+      details: error.message
+    });
+  }
+});
+
+// start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`AutoFix2000 backend running on http://localhost:${PORT}`);
+});
