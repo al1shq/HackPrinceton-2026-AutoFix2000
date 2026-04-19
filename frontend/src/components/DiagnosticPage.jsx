@@ -49,6 +49,8 @@ export default function DiagnosticPage({ inputData, onComplete }) {
 
     setCurrent(data);
     
+    // changed from 85 to 80 because noticed that 85 was often too high
+    // K2 seemed to get a good idea of the diagnosis early on
     if (data.confidence >= 0.80) {
       setTimeout(() => onComplete({ apiResult: data, messages: msgs }), 600);
     }

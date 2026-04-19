@@ -118,6 +118,8 @@ app.post("/diagnose", async (req, res) => {
           parsed = JSON.parse(match[0]);
         } catch {
           // K2 returned text around the JSON, so ask Elephant to extract just the object.
+          // by doing it this way, can leverage K2's strong analysis while
+          // using a free tool like Elephant to clean up response and format JSON
           console.log("Send to Elephant");
           const otherResponse = await fetch(
             "https://openrouter.ai/api/v1/chat/completions",
