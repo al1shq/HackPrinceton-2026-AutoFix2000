@@ -36,28 +36,28 @@ export default function DiagnosticPage({ inputData, onComplete }) {
   }, []);
 
   const callBackend = async (msgs) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: msgs }),
-      });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data = await res.json();
-      setCurrent(data);
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: msgs }),
+    });
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
 
-      // Check if confidence threshold reached → go to result screen
-      if (data.confidence >= 0.85) {
-        setTimeout(() => onComplete({ apiResult: data, messages: msgs }), 600);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    setCurrent(data);
+    
+    if (data.confidence >= 0.85) {
+      setTimeout(() => onComplete({ apiResult: data, messages: msgs }), 600);
     }
-  };
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleAnswer = (answerText) => {
     if (!current || loading) return;
@@ -324,7 +324,7 @@ export default function DiagnosticPage({ inputData, onComplete }) {
                         type="text"
                         className="retro-input flex-1"
                         style={{ fontSize: '13px' }}
-                        placeholder={questionType === 'inspection' ? 'Describe what you observe...' : 'Type your answer...'}
+                        placeholder="Type your answer here...:"
                         value={textInput}
                         autoFocus
                         onChange={(e) => setTextInput(e.target.value)}
