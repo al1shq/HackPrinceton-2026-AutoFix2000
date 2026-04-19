@@ -1,0 +1,132 @@
+import { useState, useRef } from 'react';
+
+export default function InputPage({ onSubmit }) {
+  const [description, setDescription] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef();
+
+  const handleImage = (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => setImagePreview(e.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    handleImage(file);
+  };
+
+  const handleSubmit = () => {
+    if (!description.trim()) return;
+    onSubmit({ description: description.trim(), imageFile, imagePreview });
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: 'var(--cream)' }}>
+      <div className="w-full max-w-xl boot-in">
+        {/* Window */}
+        <div className="retro-box">
+          <div className="window-bar">
+            <div className="window-dot" style={{ background: '#ff6b6b' }} />
+            <div className="window-dot" style={{ background: '#ffd93d' }} />
+            <div className="window-dot" style={{ background: '#6bcb77' }} />
+            <span className="ml-2">AutoFix 2000 — Vehicle Input</span>
+            <span className="ml-auto opacity-60">Step 1/3</span>
+          </div>
+
+          <div className="p-8 space-y-7">
+            {/* Title */}
+            <div className="text-center">
+              <div className="font-pixel glow-text" style={{ fontSize: '36px', color: 'var(--dusky-purple-dark)' }}>
+                Describe Your Issue
+              </div>
+              <div className="font-mono-retro mt-1" style={{ fontSize: '11px', color: 'var(--dusky-purple-light)', letterSpacing: '0.2em' }}>
+                VEHICLE DIAGNOSTIC INPUT MODULE
+              </div>
+            </div>
+
+            {/* Description field */}
+            <div className="space-y-2">
+              <label className="font-mono-retro block" style={{ fontSize: '11px', color: 'var(--text-mid)', letterSpacing: '0.15em' }}>
+                DESCRIBE THE PROBLEM
+              </label>
+              <textarea
+                className="retro-input"
+                style={{ minHeight: '120px', resize: 'vertical', lineHeight: 1.6 }}
+                placeholder="e.g. My car makes a grinding noise when braking, especially at low speeds. The steering wheel vibrates at highway speeds..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <div className="flex justify-between">
+                <span className="font-mono-retro" style={{ fontSize: '10px', color: 'var(--dusky-purple-light)' }}>
+                  Be as specific as possible for best results
+                </span>
+                <span className="font-mono-retro" style={{ fontSize: '10px', color: description.length > 20 ? 'var(--dusky-purple)' : 'var(--soft-gray)' }}>
+                  {description.length} chars
+                </span>
+              </div>
+            </div>
+
+            {/* Image upload */}
+            <div className="space-y-2">
+              <label className="font-mono-retro block" style={{ fontSize: '11px', color: 'var(--text-mid)', letterSpacing: '0.15em' }}>
+                UPLOAD PHOTO (OPTIONAL)
+              </label>
+
+              {imagePreview ? (
+                <div className="relative retro-box-yellow p-2">
+                  <img src={imagePreview} alt="upload" className="w-full max-h-48 object-contain" />
+                  <button
+                    className="absolute top-2 right-2 btn-secondary"
+                    style={{ padding: '3px 10px', fontSize: '11px' }}
+                    onClick={() => { setImageFile(null); setImagePreview(null); }}
+                  >
+                    ✕ Remove
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={`upload-zone rounded-none p-8 text-center ${dragOver ? 'drag-over' : ''}`}
+                  onClick={() => fileRef.current.click()}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                >
+                  <div className="font-pixel" style={{ fontSize: '36px', color: 'var(--dusky-purple-light)' }}>⊞</div>
+                  <div className="font-mono-retro mt-2" style={{ fontSize: '12px', color: 'var(--dusky-purple)', letterSpacing: '0.1em' }}>
+                    CLICK OR DRAG IMAGE HERE
+                  </div>
+                  <div className="font-mono-retro mt-1" style={{ fontSize: '10px', color: 'var(--dusky-purple-light)' }}>
+                    PNG, JPG, WEBP accepted
+                  </div>
+                </div>
+              )}
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImage(e.target.files[0])} />
+            </div>
+
+            {/* Submit */}
+            <button
+              className="btn-primary w-full"
+              style={{ fontSize: '14px', padding: '13px', opacity: description.trim() ? 1 : 0.5, cursor: description.trim() ? 'pointer' : 'not-allowed' }}
+              onClick={handleSubmit}
+              disabled={!description.trim()}
+            >
+              ▶▶ RUN DIAGNOSTIC
+            </button>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="font-mono-retro text-center mt-4" style={{ fontSize: '10px', color: 'var(--dusky-purple-light)', letterSpacing: '0.15em' }}>
+          AUTOFIX 2000 · SECURE DIAGNOSTIC SESSION · ENCRYPTED
+        </div>
+      </div>
+    </div>
+  );
+}

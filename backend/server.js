@@ -47,6 +47,7 @@ You MUST:
 - Avoid final answers unless confidence > 0.85
 - Estimate waste prevented (money + environmental impact)
 
+
 Always respond in structured JSON:
 {
   "question": "...",
